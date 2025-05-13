@@ -1,43 +1,111 @@
-# Project React Tailwindcss v4 with Shadcn
+# Delicious Cake Mobile App
 
-## Introduction
-This project uses React and Tailwind CSS to build a modern web application. It is configured with Vite to provide a fast and smooth development experience.
+## Overview
 
-## Key Features
-- **Responsive Design**: Utilizes Tailwind CSS for creating beautiful and flexible user interfaces.
-- **High Performance**: Vite offers quick loading times and Hot Module Replacement (HMR).
-- **Easily Extensible Structure**: The project is organized clearly, making it easy to maintain and extend.
+Delicious Cake is a modern web application for a bakery business, offering custom cake ordering, product catalog browsing, and seamless user interaction. Built with React and styled with Tailwind CSS, it provides a responsive and user-friendly interface for customers to explore and order bakery products.
 
-## Technologies Used
-- **React**: JavaScript library for building user interfaces.
-- **Tailwind CSS**: Utility-first CSS framework for design.
-- **Vite**: Fast build tool for web applications.
-- **Shadcn**: Library supporting UI development.
+## Features
 
-## Installation
-To get started with this project, you need to have Node.js installed. Then, follow these steps:
+- **Product Catalog**: Browse through various cake categories and products
+- **Custom Order System**: Place customized cake orders with detailed specifications
+- **Shopping Cart**: Manage selected items with quantity adjustments
+- **User Authentication**: Secure login and registration system
+- **Responsive Design**: Optimized for both mobile and desktop views
+- **Contact Form**: Easy communication channel with the bakery
+- **About Section**: Company history and team introduction
+
+## Tech Stack
+
+- **Frontend**: React 19
+- **Styling**: Tailwind CSS v4
+- **UI Components**: Shadcn UI
+- **Forms**: React Hook Form
+- **State Management**: TanStack Query
+- **Routing**: React Router DOM
+- **Animations**: Tailwind CSS Animations
+- **Icons**: Lucide React
+- **Toast Notifications**: Sonner
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (Latest LTS version)
+- npm or yarn package manager
+
+### Installation
 
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/Minh20812/Project-React-Tailwindcss-v4-with-Shadcn.git
-   cd Project-React-Tailwindcss-v4-with-Shadcn
-   ```
+
+```bash
+git clone [https://github.com/Minh20812/Delicious-Cake-Web-App.git]
+cd delicious-cake-mobile-app
+```
 
 2. Install dependencies:
-   ```bash
-   npm install
-   ```
 
-3. Run the application:
-   ```bash
-   npm run dev
-   ```
+```bash
+npm install
+```
 
-## Usage
-Once the application is running, you can access it at `http://localhost:5173` to view your app.
+3. Start the development server:
+
+```bash
+npm run dev
+```
+
+4. Open your browser and visit:
+
+```
+http://localhost:5173
+```
+
+## Project Structure
+
+```
+delicious-cake-mobile-app/
+├── src/
+│   ├── components/
+│   │   ├── layout/
+│   │   ├── ui/
+│   │   └── auth/
+│   ├── pages/
+│   ├── styles/
+│   └── App.jsx
+├── public/
+└── package.json
+```
+
+## Key Components
+
+- **Navbar**: Main navigation with cart and user authentication
+- **Product Catalog**: Grid layout of available cakes
+- **Custom Order Form**: Detailed form for custom cake requests
+- **Shopping Cart**: Order summary and checkout process
+- **Authentication Modal**: User login and registration
+- **Contact Form**: Customer inquiry submission
+
+## Color Scheme
+
+- Primary Brown: `#46240E`
+- Pink: `#FFD6DC`
+- Cream: `#FFF9E6`
+- Gold: `#FFCB47`
 
 ## Contributing
-If you would like to contribute to this project, please create a pull request or open an issue to discuss.
+
+1. Fork the repository
+2. Create your feature branch: `git checkout -b feature/AmazingFeature`
+3. Commit your changes: `git commit -m 'Add some AmazingFeature'`
+4. Push to the branch: `git push origin feature/AmazingFeature`
+5. Open a pull request
 
 ## License
-This project is licensed under the MIT License. Please see the LICENSE file for more details.
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Design inspiration from modern bakery websites
+- Shadcn UI for beautiful components
+- Tailwind CSS for utility-first styling
