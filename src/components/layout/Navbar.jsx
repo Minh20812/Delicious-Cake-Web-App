@@ -1,13 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X, ShoppingCart, Search, User } from "lucide-react";
 import SearchBar from "./SearchBar";
 import AuthModal from "../auth/AuthModal";
+import { auth } from "../../firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { useAdmin } from "@/contexts/AdminContext";
+import { useCart } from "@/contexts/CartContext";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const { isAdmin, isEditMode, toggleEditMode } = useAdmin();
+  const { cart } = useCart();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -16,6 +24,18 @@ const Navbar = () => {
   const toggleSearch = () => {
     setIsSearchOpen(!isSearchOpen);
   };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <nav className="bg-[#FFF9E6] border-b border-brown/10 sticky top-0 z-50">
@@ -73,6 +93,12 @@ const Navbar = () => {
             >
               Contact
             </Link>
+            <Link
+              to="/blog"
+              className="text-brown hover:text-gold transition-colors"
+            >
+              Blog
+            </Link>
           </div>
 
           {/* Search, Cart, Account and Mobile Menu Toggle */}
@@ -92,10 +118,18 @@ const Navbar = () => {
             </Link>
             <button
               onClick={() => setIsAuthModalOpen(true)}
-              className="text-brown hover:text-gold transition-colors"
+              className="text-brown hover:text-gold transition-colors cursor-pointer"
               aria-label="Account"
             >
-              <User size={24} />
+              {user ? (
+                <img
+                  src={user.photoURL || "/default-avatar.png"}
+                  alt="Profile"
+                  className="w-8 h-8 rounded-full"
+                />
+              ) : (
+                <User size={24} />
+              )}
             </button>
             <button className="md:hidden text-brown" onClick={toggleMenu}>
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -143,6 +177,13 @@ const Navbar = () => {
                 onClick={toggleMenu}
               >
                 Contact
+              </Link>
+              <Link
+                to="/blog"
+                className="block text-brown hover:text-gold transition-colors py-2"
+                onClick={toggleMobileMenu}
+              >
+                Blog
               </Link>
             </div>
           </div>

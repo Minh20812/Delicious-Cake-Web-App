@@ -4,11 +4,11 @@ import Footer from "../components/layout/Footer";
 
 const About = () => {
   return (
-    <div className="min-h-screen flex flex-col font-poppins">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow">
         {/* Hero Section */}
-        <div className="bg-[#FFD6DC]/10 py-12">
+        <div className="bg-pink/10 py-12">
           <div className="container mx-auto px-4">
             <h1 className="font-playfair text-3xl md:text-4xl lg:text-5xl text-brown text-center">
               Về Chúng Tôi
@@ -61,7 +61,7 @@ const About = () => {
         </section>
 
         {/* Our Values */}
-        <section className="bg-[#FFF9E6] py-16">
+        <section className="bg-cream py-16">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <span className="font-dancing text-gold text-2xl">
@@ -73,7 +73,7 @@ const About = () => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="bg-white p-6 rounded-lg shadow-md text-center">
-                <div className="w-16 h-16 bg-[#FFD6DC]/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-pink/30 rounded-full flex items-center justify-center mx-auto mb-4">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-8 w-8 text-brown"
@@ -99,7 +99,7 @@ const About = () => {
                 </p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md text-center">
-                <div className="w-16 h-16 bg-[#FFD6DC]/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-pink/30 rounded-full flex items-center justify-center mx-auto mb-4">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-8 w-8 text-brown"
@@ -125,7 +125,7 @@ const About = () => {
                 </p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md text-center">
-                <div className="w-16 h-16 bg-[#FFD6DC]/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-pink/30 rounded-full flex items-center justify-center mx-auto mb-4">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-8 w-8 text-brown"

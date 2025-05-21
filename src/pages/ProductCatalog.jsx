@@ -12,143 +12,281 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useSearchParams } from "react-router-dom";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/firebase";
 
 // Sample products data with additional flags
-const products = [
-  {
-    id: 1,
-    name: "Chocolate Indulgence",
-    description:
-      "Rich layers of chocolate sponge filled with ganache and covered in smooth chocolate frosting.",
-    price: 65.99,
-    image:
-      "https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80",
-    category: "Chocolate",
-    isBestSeller: true,
-    isNew: false,
-  },
-  {
-    id: 2,
-    name: "Vanilla Dream",
-    description:
-      "Light and fluffy vanilla sponge with layers of vanilla bean buttercream.",
-    price: 55.99,
-    image:
-      "https://images.unsplash.com/photo-1621303837174-89787a7d4729?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=736&q=80",
-    category: "Vanilla",
-    isBestSeller: true,
-    isNew: false,
-  },
-  {
-    id: 3,
-    name: "Strawberry Bliss",
-    description:
-      "Delicate sponge with fresh strawberry compote and cream cheese frosting.",
-    price: 59.99,
-    image:
-      "https://images.unsplash.com/photo-1565958011703-44f9829ba187?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=765&q=80",
-    category: "Fruit",
-    isBestSeller: false,
-    isNew: true,
-  },
-  {
-    id: 4,
-    name: "Caramel Macchiato",
-    description:
-      "Coffee-infused sponge with salted caramel layers and espresso buttercream.",
-    price: 62.99,
-    image:
-      "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
-    category: "Coffee",
-    isBestSeller: false,
-    isNew: true,
-  },
-  {
-    id: 5,
-    name: "Red Velvet",
-    description:
-      "Classic red velvet cake with cream cheese frosting, a perfect balance of cocoa and vanilla.",
-    price: 58.99,
-    image:
-      "https://images.unsplash.com/photo-1586788680434-30d324edf8d1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
-    category: "Specialty",
-    isBestSeller: true,
-    isNew: false,
-  },
-  {
-    id: 6,
-    name: "Lemon Zest",
-    description:
-      "Light lemon sponge with lemon curd and cream cheese frosting, topped with candied lemon.",
-    price: 56.99,
-    image:
-      "https://images.unsplash.com/photo-1599785209707-a456fc1337bb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=786&q=80",
-    category: "Fruit",
-    isBestSeller: false,
-    isNew: false,
-  },
-  {
-    id: 7,
-    name: "Tiramisu Cake",
-    description:
-      "Coffee-soaked layers with mascarpone cream and cocoa dusting.",
-    price: 64.99,
-    image:
-      "https://images.unsplash.com/photo-1550617931-e17a7b70dce2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=735&q=80",
-    category: "Coffee",
-    isBestSeller: false,
-    isNew: true,
-  },
-  {
-    id: 8,
-    name: "Black Forest",
-    description:
-      "Chocolate sponge with cherries, cherry syrup, and whipped cream.",
-    price: 67.99,
-    image:
-      "https://images.unsplash.com/photo-1606890737304-57a1ca8a5b62?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1203&q=80",
-    category: "Chocolate",
-    isBestSeller: true,
-    isNew: false,
-  },
-];
+// const products = [
+//   {
+//     id: 1,
+//     name: "Chocolate Indulgence",
+//     description:
+//       "Rich layers of chocolate sponge filled with ganache and covered in smooth chocolate frosting.",
+//     price: 65.99,
+//     image:
+//       "https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80",
+//     category: "Chocolate",
+//     isBestSeller: true,
+//     isNew: false,
+//   },
+//   {
+//     id: 2,
+//     name: "Vanilla Dream",
+//     description:
+//       "Light and fluffy vanilla sponge with layers of vanilla bean buttercream.",
+//     price: 55.99,
+//     image:
+//       "https://images.unsplash.com/photo-1621303837174-89787a7d4729?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=736&q=80",
+//     category: "Vanilla",
+//     isBestSeller: true,
+//     isNew: false,
+//   },
+//   {
+//     id: 3,
+//     name: "Strawberry Bliss",
+//     description:
+//       "Delicate sponge with fresh strawberry compote and cream cheese frosting.",
+//     price: 59.99,
+//     image:
+//       "https://images.unsplash.com/photo-1565958011703-44f9829ba187?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=765&q=80",
+//     category: "Fruit",
+//     isBestSeller: false,
+//     isNew: true,
+//   },
+//   {
+//     id: 4,
+//     name: "Caramel Macchiato",
+//     description:
+//       "Coffee-infused sponge with salted caramel layers and espresso buttercream.",
+//     price: 62.99,
+//     image:
+//       "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
+//     category: "Coffee",
+//     isBestSeller: false,
+//     isNew: true,
+//   },
+//   {
+//     id: 5,
+//     name: "Red Velvet",
+//     description:
+//       "Classic red velvet cake with cream cheese frosting, a perfect balance of cocoa and vanilla.",
+//     price: 58.99,
+//     image:
+//       "https://images.unsplash.com/photo-1586788680434-30d324edf8d1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
+//     category: "Specialty",
+//     isBestSeller: true,
+//     isNew: false,
+//   },
+//   {
+//     id: 6,
+//     name: "Lemon Zest",
+//     description:
+//       "Light lemon sponge with lemon curd and cream cheese frosting, topped with candied lemon.",
+//     price: 56.99,
+//     image:
+//       "https://images.unsplash.com/photo-1599785209707-a456fc1337bb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=786&q=80",
+//     category: "Fruit",
+//     isBestSeller: false,
+//     isNew: false,
+//   },
+//   {
+//     id: 7,
+//     name: "Tiramisu Cake",
+//     description:
+//       "Coffee-soaked layers with mascarpone cream and cocoa dusting.",
+//     price: 64.99,
+//     image:
+//       "https://images.unsplash.com/photo-1550617931-e17a7b70dce2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=735&q=80",
+//     category: "Coffee",
+//     isBestSeller: false,
+//     isNew: true,
+//   },
+//   {
+//     id: 8,
+//     name: "Black Forest",
+//     description:
+//       "Chocolate sponge with cherries, cherry syrup, and whipped cream.",
+//     price: 67.99,
+//     image:
+//       "https://images.unsplash.com/photo-1606890737304-57a1ca8a5b62?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1203&q=80",
+//     category: "Chocolate",
+//     isBestSeller: true,
+//     isNew: false,
+//   },
+//   {
+//     id: 9,
+//     name: "Chocolate Indulgence",
+//     description:
+//       "Rich layers of chocolate sponge filled with ganache and covered in smooth chocolate frosting.",
+//     price: 65.99,
+//     image:
+//       "https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80",
+//     category: "Chocolate",
+//     isBestSeller: true,
+//     isNew: false,
+//   },
+//   {
+//     id: 10,
+//     name: "Vanilla Dream",
+//     description:
+//       "Light and fluffy vanilla sponge with layers of vanilla bean buttercream.",
+//     price: 55.99,
+//     image:
+//       "https://images.unsplash.com/photo-1621303837174-89787a7d4729?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=736&q=80",
+//     category: "Vanilla",
+//     isBestSeller: true,
+//     isNew: false,
+//   },
+//   {
+//     id: 11,
+//     name: "Strawberry Bliss",
+//     description:
+//       "Delicate sponge with fresh strawberry compote and cream cheese frosting.",
+//     price: 59.99,
+//     image:
+//       "https://images.unsplash.com/photo-1565958011703-44f9829ba187?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=765&q=80",
+//     category: "Fruit",
+//     isBestSeller: false,
+//     isNew: true,
+//   },
+//   {
+//     id: 12,
+//     name: "Caramel Macchiato",
+//     description:
+//       "Coffee-infused sponge with salted caramel layers and espresso buttercream.",
+//     price: 62.99,
+//     image:
+//       "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
+//     category: "Coffee",
+//     isBestSeller: false,
+//     isNew: true,
+//   },
+//   {
+//     id: 13,
+//     name: "Red Velvet",
+//     description:
+//       "Classic red velvet cake with cream cheese frosting, a perfect balance of cocoa and vanilla.",
+//     price: 58.99,
+//     image:
+//       "https://images.unsplash.com/photo-1586788680434-30d324edf8d1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
+//     category: "Specialty",
+//     isBestSeller: true,
+//     isNew: false,
+//   },
+//   {
+//     id: 14,
+//     name: "Lemon Zest",
+//     description:
+//       "Light lemon sponge with lemon curd and cream cheese frosting, topped with candied lemon.",
+//     price: 56.99,
+//     image:
+//       "https://images.unsplash.com/photo-1599785209707-a456fc1337bb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=786&q=80",
+//     category: "Fruit",
+//     isBestSeller: false,
+//     isNew: false,
+//   },
+//   {
+//     id: 15,
+//     name: "Tiramisu Cake",
+//     description:
+//       "Coffee-soaked layers with mascarpone cream and cocoa dusting.",
+//     price: 64.99,
+//     image:
+//       "https://images.unsplash.com/photo-1550617931-e17a7b70dce2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=735&q=80",
+//     category: "Coffee",
+//     isBestSeller: false,
+//     isNew: true,
+//   },
+//   {
+//     id: 16,
+//     name: "Black Forest",
+//     description:
+//       "Chocolate sponge with cherries, cherry syrup, and whipped cream.",
+//     price: 67.99,
+//     image:
+//       "https://images.unsplash.com/photo-1606890737304-57a1ca8a5b62?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1203&q=80",
+//     category: "Chocolate",
+//     isBestSeller: true,
+//     isNew: false,
+//   },
+// ];
 
 // Category options
-const categories = [
-  "All",
-  "Chocolate",
-  "Vanilla",
-  "Fruit",
-  "Coffee",
-  "Specialty",
-];
+// const categories = [
+//   "All",
+//   "Chocolate",
+//   "Vanilla",
+//   "Fruit",
+//   "Coffee",
+//   "Specialty",
+// ];
 
 const ProductCatalog = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortOption, setSortOption] = useState("default");
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-  const [filteredProducts, setFilteredProducts] = useState(products);
+  const [allProducts, setAllProducts] = useState([]);
+  const [categories, setCategories] = useState(["All"]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
 
-  // Handle search query from URL params
   useEffect(() => {
-    const searchQuery = searchParams.get("search");
-    if (searchQuery) {
-      filterProducts(selectedCategory, sortOption, searchQuery);
-    } else {
-      filterProducts(selectedCategory, sortOption);
-    }
+    const fetchData = async () => {
+      try {
+        // Fetch products
+        const productsSnapshot = await getDocs(collection(db, "products"));
+        const fetchedProducts = productsSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        // Fetch categories
+        const categoriesSnapshot = await getDocs(collection(db, "categories"));
+        const fetchedCategories = [
+          "All",
+          ...categoriesSnapshot.docs.map((doc) => doc.data().name),
+        ];
+
+        setAllProducts(fetchedProducts);
+        setCategories(fetchedCategories);
+        filterProducts(
+          selectedCategory,
+          sortOption,
+          searchParams.get("search") || "",
+          fetchedProducts
+        );
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        // Set default values if fetch fails
+        setAllProducts([]);
+        setCategories(["All"]);
+        setFilteredProducts([]);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    filterProducts(
+      selectedCategory,
+      sortOption,
+      searchParams.get("search") || "",
+      allProducts
+    );
   }, [searchParams, selectedCategory, sortOption]);
 
-  // Filter and sort products
-  const filterProducts = (category, sort, search) => {
-    // First filter by category
+  const filterProducts = (
+    category,
+    sort,
+    search,
+    productsSource = allProducts
+  ) => {
     let result =
       category === "All"
-        ? [...products]
-        : products.filter((product) => product.category === category);
+        ? [...productsSource]
+        : productsSource.filter((product) => product.category === category);
 
-    // Then filter by search query if present
     if (search && search.trim() !== "") {
       const searchLower = search.toLowerCase();
       result = result.filter(
@@ -159,7 +297,6 @@ const ProductCatalog = () => {
       );
     }
 
-    // Then apply sorting
     switch (sort) {
       case "bestSeller":
         result = result.filter((product) => product.isBestSeller);
@@ -168,13 +305,12 @@ const ProductCatalog = () => {
         result = result.filter((product) => product.isNew);
         break;
       case "lowToHigh":
-        result = [...result].sort((a, b) => a.price - b.price);
+        result = result.sort((a, b) => a.price - b.price);
         break;
       case "highToLow":
-        result = [...result].sort((a, b) => b.price - a.price);
+        result = result.sort((a, b) => b.price - a.price);
         break;
       default:
-        // Keep default order
         break;
     }
 
@@ -418,7 +554,7 @@ const ProductCatalog = () => {
                       ))}
                     </div>
                     <div className="mt-8 text-center text-brown/60 text-sm">
-                      Showing {filteredProducts.length} of {products.length}{" "}
+                      Showing {filteredProducts.length} of {allProducts.length}{" "}
                       products
                     </div>
                   </>

@@ -1,18 +1,76 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import {
+  signInWithPopup,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+} from "firebase/auth";
+import { auth } from "../../firebase";
+import { toast } from "sonner";
+import UserMenu from "./UserMenu";
+import { useAdmin } from "@/contexts/AdminContext";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const AuthModal = ({ isOpen, onClose }) => {
   const [mode, setMode] = useState("signin");
   const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState(null);
+  const { setIsAdmin } = useAdmin();
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setIsLoading(true);
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+
+      // Thành công
+      toast.success("Đăng nhập thành công!");
+      console.log("User Info:", result.user);
+      onClose();
+    } catch (error) {
+      // Xử lý các lỗi cụ thể
+      if (error.code === "auth/popup-closed-by-user") {
+        toast.error("Đăng nhập bị hủy bởi người dùng");
+      } else if (error.code === "auth/popup-blocked") {
+        toast.error("Popup bị chặn. Vui lòng cho phép popup và thử lại");
+      } else {
+        toast.error("Đăng nhập thất bại. Vui lòng thử lại sau");
+      }
+      console.error("Login error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleSignIn = (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate API call
+    const form = e.target;
+    const email = form.elements.namedItem("email").value;
+    const password = form.elements.namedItem("password").value;
+
+    // Simulate API call with admin check
     setTimeout(() => {
       setIsLoading(false);
-      // Thay vì dùng toast, có thể sử dụng alert hoặc một component thông báo khác
-      alert("Đăng nhập thành công!");
+
+      // Check if this is an admin email
+      if (email === "admin@example.com" && password === "admin123") {
+        setIsAdmin(true);
+        localStorage.setItem("isAdmin", "true");
+        toast.success("Đăng nhập thành công với quyền quản trị!");
+      } else {
+        // Normal user login success
+        toast.success("Đăng nhập thành công!");
+      }
       onClose();
     }, 1000);
   };
@@ -24,7 +82,7 @@ const AuthModal = ({ isOpen, onClose }) => {
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
-      alert(
+      toast.success(
         "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản."
       );
       onClose();
@@ -38,12 +96,28 @@ const AuthModal = ({ isOpen, onClose }) => {
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
-      alert("Hãy kiểm tra email của bạn để đặt lại mật khẩu.");
+      toast.success("Hãy kiểm tra email của bạn để đặt lại mật khẩu.");
       onClose();
     }, 1000);
   };
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   if (!isOpen) return null;
+
+  if (user) {
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <UserMenu user={user} onClose={onClose} />
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -69,8 +143,8 @@ const AuthModal = ({ isOpen, onClose }) => {
         </div>
 
         {mode === "signin" && (
-          <form onSubmit={handleSignIn} className="space-y-4">
-            <div className="space-y-2">
+          <form onSubmit={handleSignIn} className="space-y-2">
+            <div className="space-y-1">
               <label htmlFor="email" className="block text-sm font-medium">
                 Email
               </label>
@@ -82,7 +156,7 @@ const AuthModal = ({ isOpen, onClose }) => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brown"
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               <div className="flex justify-between">
                 <label htmlFor="password" className="block text-sm font-medium">
                   Mật khẩu
@@ -104,6 +178,13 @@ const AuthModal = ({ isOpen, onClose }) => {
               />
             </div>
             <button
+              onClick={handleGoogleSignIn}
+              className="w-full py-2 px-4 bg-white border border-gray-300 rounded-md font-medium text-brown"
+              disabled={isLoading}
+            >
+              {isLoading ? "Đang xử lý..." : "Đăng nhập với Google"}
+            </button>
+            <button
               type="submit"
               className="w-full py-2 px-4 bg-amber-800 hover:bg-amber-700 text-white rounded-md font-medium"
               disabled={isLoading}
@@ -124,8 +205,8 @@ const AuthModal = ({ isOpen, onClose }) => {
         )}
 
         {mode === "signup" && (
-          <form onSubmit={handleSignUp} className="space-y-4">
-            <div className="space-y-2">
+          <form onSubmit={handleSignUp} className="space-y-2">
+            <div className="space-y-1">
               <label htmlFor="name" className="block text-sm font-medium">
                 Họ tên
               </label>
@@ -137,7 +218,7 @@ const AuthModal = ({ isOpen, onClose }) => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brown"
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               <label htmlFor="email" className="block text-sm font-medium">
                 Email
               </label>
@@ -149,7 +230,7 @@ const AuthModal = ({ isOpen, onClose }) => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brown"
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               <label htmlFor="password" className="block text-sm font-medium">
                 Mật khẩu
               </label>
@@ -161,7 +242,7 @@ const AuthModal = ({ isOpen, onClose }) => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brown"
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               <label
                 htmlFor="confirmPassword"
                 className="block text-sm font-medium"
@@ -176,6 +257,13 @@ const AuthModal = ({ isOpen, onClose }) => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brown"
               />
             </div>
+            <button
+              onClick={handleGoogleSignIn}
+              className="w-full py-2 px-4 bg-white border-1 border-black text-brown rounded-md font-medium"
+              disabled={isLoading}
+            >
+              {isLoading ? "Đang xử lý..." : "Đăng ký với Google"}
+            </button>
             <button
               type="submit"
               className="w-full py-2 px-4 bg-amber-800 hover:bg-amber-700 text-white rounded-md font-medium"
@@ -197,8 +285,8 @@ const AuthModal = ({ isOpen, onClose }) => {
         )}
 
         {mode === "forgot-password" && (
-          <form onSubmit={handleForgotPassword} className="space-y-4">
-            <div className="space-y-2">
+          <form onSubmit={handleForgotPassword} className="space-y-2">
+            <div className="space-y-1">
               <label htmlFor="email" className="block text-sm font-medium">
                 Email
               </label>
