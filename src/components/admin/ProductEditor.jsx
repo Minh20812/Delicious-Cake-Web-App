@@ -101,7 +101,7 @@ const ProductEditor = ({ product, isOpen, onClose, onSave }) => {
               min="0"
               value={editedProduct.price}
               onChange={handleChange}
-              placeholder={product.price.toString()}
+              placeholder={product.price?.toString() || ""}
             />
           </div>
 
@@ -114,7 +114,7 @@ const ProductEditor = ({ product, isOpen, onClose, onSave }) => {
               min="0"
               value={editedProduct.stock}
               onChange={handleChange}
-              placeholder={product.stock.toString()}
+              placeholder={product.stock?.toString() || ""}
             />
           </div>
 
