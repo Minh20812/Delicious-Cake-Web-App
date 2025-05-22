@@ -1,7 +1,8 @@
 import React from "react";
 import { useAdmin } from "@/contexts/AdminContext";
-import { Settings, LogOut } from "lucide-react";
+import { Settings, LogOut, LayoutDashboard } from "lucide-react";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
 const AdminControls = () => {
   const { isAdmin, isEditMode, toggleEditMode, setIsAdmin } = useAdmin();
@@ -16,6 +17,14 @@ const AdminControls = () => {
 
   return (
     <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+      <Link
+        to="/admin"
+        className="w-12 h-12 bg-brown text-cream rounded-full shadow-lg flex items-center justify-center"
+        title="Đến trang quản trị"
+      >
+        <LayoutDashboard size={24} />
+      </Link>
+
       <button
         onClick={toggleEditMode}
         className={`w-12 h-12 rounded-full shadow-lg flex items-center justify-center ${

@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import { useAdmin } from "@/contexts/AdminContext";
@@ -7,9 +8,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProductManagement } from "@/components/admin/ProductManagement";
 import { OrderManagement } from "@/components/admin/OrderManagement";
 import { Settings, BookOpen } from "lucide-react";
+import SystemSettings from "@/components/admin/SystemSettings";
 
 const AdminDashboard = () => {
   const { isAdmin } = useAdmin();
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // Redirect to home if not admin
   if (!isAdmin) {
@@ -26,19 +29,13 @@ const AdminDashboard = () => {
               Quản lý hệ thống
             </h1>
             <div className="flex flex-wrap gap-3">
-              <Button variant="outline" className="flex items-center gap-2">
-                <Settings size={18} />
-                <span>Cài đặt hệ thống</span>
-              </Button>
               <Button
                 variant="outline"
                 className="flex items-center gap-2"
-                asChild
+                onClick={() => setIsSettingsOpen(true)}
               >
-                <Link to="/blog">
-                  <BookOpen size={18} />
-                  <span>Xem trang Blog</span>
-                </Link>
+                <Settings size={18} />
+                <span>Cài đặt hệ thống</span>
               </Button>
             </div>
           </div>
@@ -100,6 +97,9 @@ const AdminDashboard = () => {
         </div>
       </main>
       <Footer />
+
+      {/* System Settings Dialog */}
+      <SystemSettings open={isSettingsOpen} onOpenChange={setIsSettingsOpen} />
     </div>
   );
 };

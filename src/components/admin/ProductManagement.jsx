@@ -102,9 +102,7 @@ export const ProductManagement = () => {
   const [products, setProducts] = useState(mockProducts);
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [currentProduct, setCurrentProduct] =
-    (useState < Product) | (null > null);
-
+  const [currentProduct, setCurrentProduct] = useState(null);
   // Filter products based on search term
   const filteredProducts = products.filter(
     (product) =>
